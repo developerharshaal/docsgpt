@@ -1,0 +1,102 @@
+# DocsGPT — Project Plan & Progress
+
+> Living roadmap. We tick items off as we go. Full mentor-mode contract is in this file
+> (see "How we'll work"). Auto-saved backup also lives at
+> `C:\Users\harshaal\.claude\plans\sunny-foraging-gosling.md`.
+
+## Progress tracker
+
+- [ ] **Phase 1 — Foundations & scaffold** (Days 1–2)  ← *we are here*
+  - [ ] Python venv + FastAPI/uvicorn installed
+  - [ ] `main.py` with `GET /health`, running locally
+  - [ ] Git repo + GitHub remote, `.gitignore`, `.env.example`
+  - [ ] Dockerfile + `docker-compose.yml` (app + Postgres/pgvector)
+  - [ ] GitHub Actions CI stub (ruff + pytest)
+- [ ] **Phase 2 — Data model & ingestion pipeline** (Days 3–5)
+- [ ] **Phase 3 — Chunking, embeddings & vector search** (Days 6–8)
+- [ ] **Phase 4 — RAG answer pipeline with Claude** (Days 9–12)
+- [ ] **Phase 5 — Agentic layer** (Days 13–15)
+- [ ] **Phase 6 — Frontend (React + Vite)** (Days 16–17)
+- [ ] **Phase 7 — Harden** (Days 18–19)
+- [ ] **Phase 8 — Deploy & document** (Day 20)
+
+**Environment status:** Python 3.12.3 ✅ · Git 2.45.1 ✅ · Docker ❌ (install before Phase 2) · Node ❌ (needed Phase 6)
+
+---
+
+## Context
+
+Harshaal is a Commvault test engineer (Python automation) moving into an **AI/LLM
+app-dev role elsewhere**. This is a **learning** build over ~20 days (target ~2026-08-19).
+**Hard constraint: only public/open data — no company or private data.**
+
+**Project:** "DocsGPT" — an AI assistant that answers questions over an open-source
+project's **public documentation** ("chat with the docs"). Default corpus: the **FastAPI
+docs** (public, MIT-licensed, and teaches the framework we build with).
+
+**Flow:** ingest public docs → chunk + embed → store vectors → user asks → classify intent
+→ retrieve relevant chunks (vector search) → Claude answers **with inline citations** →
+agent layer can search again / fetch a page / flag a gap → thin web UI shows answer + sources.
+
+## How we'll work together — LEARNING MODE (operating contract)
+
+Not a delivery — a learning project. **Claude will not just build it.** Every step:
+1. **Concept first** — what it is, *why* it exists, plain language + small example.
+2. **Show the pattern** — a minimal annotated example, not the finished feature.
+3. **You write the code** — you type it; Claude guides/reviews. Claude writes only when
+   you ask or to unblock after you've tried.
+4. **Run & verify together** — run it, read errors together, explain the output.
+5. **Check understanding** — a question or prediction before advancing.
+6. **Recap** — "what you learned" + an interview talking point.
+
+Pace is yours; ask "why" freely; say "slow down / I don't get X" anytime.
+
+## Stack
+
+| Concern | Choice |
+|---|---|
+| Language | Python 3.12 |
+| Web framework | FastAPI (async) + Pydantic v2 |
+| DB + vectors | PostgreSQL + pgvector |
+| ORM / migrations | SQLAlchemy 2.0 (async) + Alembic |
+| LLM | Anthropic Claude — `claude-haiku-4-5` (classify), `claude-opus-4-8` (generate), `tool_runner` (agent) |
+| Embeddings | local `sentence-transformers` (bge-small) for $0 while learning → Voyage AI later |
+| Ingestion | `httpx` + `beautifulsoup4` / Markdown parser |
+| Frontend | Minimal React + Vite (TS) — fallback HTMX |
+| Container | Docker + docker-compose |
+| CI/CD | GitHub Actions (ruff + pytest) |
+| Deploy | Render or Fly.io |
+| Tests | pytest + httpx AsyncClient |
+
+> No Opus 5 exists. `claude-opus-4-8` = top Opus; `claude-haiku-4-5` = cheap/fast tier.
+> Never hardcode API keys — read `ANTHROPIC_API_KEY` / `VOYAGE_API_KEY` from the environment.
+
+## Phases (each run in Learning-Mode)
+
+1. **Foundations & scaffold** — venv, FastAPI `/health`, Git+GitHub, Docker/compose, CI stub.
+   Concepts: web framework/ASGI, sync vs async, containers, CI.
+2. **Data model & ingestion** — SQLAlchemy `documents`/`chunks`, Alembic migration, ingest
+   FastAPI docs markdown, pytest. Concepts: ORM vs SQL, migrations, schema design, testing.
+3. **Chunking, embeddings & vector search** — chunk by heading, embed, pgvector index,
+   `POST /search`. Concepts: embeddings, cosine similarity, chunking, vector index.
+4. **RAG answer pipeline** — `POST /ask`: classify (haiku, structured outputs) → retrieve →
+   answer (opus) grounded w/ inline citations + "not found" fallback; prompt caching; cost
+   logging. Concepts: RAG, grounding vs hallucination, structured outputs, caching, model choice.
+5. **Agentic layer** — tool runner w/ `search_docs`, `fetch_doc_page`, `flag_gap`; confidence
+   gating. Concepts: the tool-call loop, tool schemas, when agents help.
+6. **Frontend** — React+Vite chat UI: question → answer + clickable sources + feedback.
+   Concepts: client↔API split, CORS, streaming, UX.
+7. **Harden** — auth, rate limiting, structured logging, error handling, more tests, CI green.
+   Concepts: auth, observability, prototype vs production.
+8. **Deploy & document** — Render/Fly + managed Postgres, secrets, README + diagram + demo.
+   Concepts: deploy, secrets, telling the story to a hiring manager.
+
+## Verification
+
+- Local: `docker-compose up` → `curl /health`; `pytest`; ingestion fills pgvector;
+  `POST /search` returns ranked hits w/ URLs.
+- RAG: `POST /ask` returns grounded answer + citations; out-of-scope → "not found in docs".
+- Agent: vague question triggers a `search_docs` refinement.
+- CI: branch push → GitHub Actions ruff + pytest green.
+- Deployed: public URL, ask via UI, see answer + sources.
+- You: at each checkpoint, can explain in your own words what we built and why.
