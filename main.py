@@ -9,3 +9,4 @@ def health_check():
 @app.get("/")
 def root_check():
     return {"message":"hello"}
+

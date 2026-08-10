@@ -1,0 +1,4 @@
+[
+  { "url": "https://fastapi.tiangolo.com/tutorial/first-steps/", "title": "First Steps" },
+  { "url": "https://fastapi.tiangolo.com/tutorial/path-params/", "title": "Path Parameters" }
+]

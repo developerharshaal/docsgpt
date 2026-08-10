@@ -6,13 +6,22 @@
 
 ## Progress tracker
 
-- [ ] **Phase 1 — Foundations & scaffold** (Days 1–2)  ← *we are here*
-  - [ ] Python venv + FastAPI/uvicorn installed
-  - [ ] `main.py` with `GET /health`, running locally
-  - [ ] Git repo + GitHub remote, `.gitignore`, `.env.example`
-  - [ ] Dockerfile + `docker-compose.yml` (app + Postgres/pgvector)
-  - [ ] GitHub Actions CI stub (ruff + pytest)
-- [ ] **Phase 2 — Data model & ingestion pipeline** (Days 3–5)
+- [~] **Phase 1 — Foundations & scaffold** (Days 1–2) — mostly done
+  - [x] Python venv + FastAPI/uvicorn installed
+  - [x] `main.py` with `GET /health` (+ `GET /`), running locally via uvicorn
+  - [x] Git repo + `.gitignore` + first commit + GitHub remote (pushed to github.com/developerharshaal/docsgpt)
+  - [x] `docker-compose.yml` — Postgres 16 + pgvector container running (`docker compose up -d`); pgvector verified via psql
+  - [ ] app `Dockerfile` (containerize the FastAPI app) — deferred, do near deploy
+  - [ ] `.env.example` (deferred → add with the API key in Phase 4)
+  - [ ] GitHub Actions CI stub (ruff + pytest) — pairs with first tests in Phase 2
+- [~] **Phase 2 — Data model & ingestion pipeline** (Days 3–5)  ← *we are here*
+  - [x] `models.py` — SQLAlchemy 2.0 models `Document` (`documents`: id, url, title, size, text) and
+    `Chunk` (`chunks`: id, doc_id FK→documents.id, text, offset, embeddings `Vector(384)`)
+  - [x] `db.py` — sync engine + `Base.metadata.create_all()`; tables verified live via
+    `docker compose exec db psql -U docsgpt -d docsgpt -c "\dt"`
+  - [ ] Alembic migration (deferred — using `create_all` for now)
+  - [ ] Ingestion script — pull FastAPI docs markdown, insert `Document` rows
+  - [ ] pytest tests for ingestion
 - [ ] **Phase 3 — Chunking, embeddings & vector search** (Days 6–8)
 - [ ] **Phase 4 — RAG answer pipeline with Claude** (Days 9–12)
 - [ ] **Phase 5 — Agentic layer** (Days 13–15)
