@@ -1,9 +1,10 @@
-from injest import parse_document, fetch_document, save_document
+from injest import parse_document, fetch_document, save_document, chunk_text
 from unittest.mock import patch, MagicMock
 from models import Base, Document
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 import pytest
+
 
 TEST_DB_URL = "postgresql+psycopg://docsgpt:docsgpt@localhost:5432/docsgpt_test"
 test_engine = create_engine(TEST_DB_URL)
@@ -38,3 +39,8 @@ def test_save_document(db_engine):
     assert len(rows) == 1
     assert rows[0].url == "http://testurl.com"
     assert rows[0].size == len("Test content")
+
+def test_chunk_text():
+    text = "abcdefghijk"
+    chunks = chunk_text(text=text, chunk_size=4, overlap=1)
+    assert chunks == [(0, "abcd"), (3, "defg"), (6, "ghij"), (9, "jk")]

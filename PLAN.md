@@ -14,22 +14,40 @@
   - [ ] app `Dockerfile` (containerize the FastAPI app) — deferred, do near deploy
   - [ ] `.env.example` (deferred → add with the API key in Phase 4)
   - [ ] GitHub Actions CI stub (ruff + pytest) — pairs with first tests in Phase 2
-- [~] **Phase 2 — Data model & ingestion pipeline** (Days 3–5)  ← *we are here*
-  - [x] `models.py` — SQLAlchemy 2.0 models `Document` (`documents`: id, url, title, size, text) and
+- [x] **Phase 2 — Data model & ingestion pipeline** (Days 3–5) — done
+  - [x] `models.py` — SQLAlchemy 2.0 models `Document` (`documents`: id, url (unique), title, size, text) and
     `Chunk` (`chunks`: id, doc_id FK→documents.id, text, offset, embeddings `Vector(384)`)
   - [x] `db.py` — sync engine + `Base.metadata.create_all()`; tables verified live via
     `docker compose exec db psql -U docsgpt -d docsgpt -c "\dt"`
-  - [ ] Alembic migration (deferred — using `create_all` for now)
-  - [ ] Ingestion script — pull FastAPI docs markdown, insert `Document` rows
-  - [ ] pytest tests for ingestion
-- [ ] **Phase 3 — Chunking, embeddings & vector search** (Days 6–8)
+  - [ ] Alembic migration (deferred — using `create_all` for now; will also codify `CREATE EXTENSION vector`)
+  - [x] `injest.py` — fetch (httpx) → parse (BeautifulSoup `get_text` clean) → save; config-driven
+    URL list in `sources.json`; idempotent via `url` UNIQUE + `ON CONFLICT DO NOTHING` upsert
+  - [x] pytest tests for ingestion (`test_injest.py`) — unit: `parse_document` (pure, exact-match) &
+    `fetch_document` (mocked `httpx.get` w/ spy); integration: `save_document` against separate
+    `docsgpt_test` DB via engine dependency-injection + fixture create_all/drop_all teardown
+- [~] **Phase 3 — Chunking, embeddings & vector search** (Days 6–8)  ← *we are here*
+  - [x] Chunking — `chunk_text` fixed-size sliding window (char size+overlap), returns `(offset, text)` tuples; unit-tested
+  - [x] Embeddings — `embeddings.py` owns `SentenceTransformer` (bge-small, 384-dim) loaded once at module
+    level + `get_embedding(text)`; `HF_HUB_OFFLINE=1` set before import to use local cache
+  - [x] Store chunks + vectors — `save_chunks(doc_id, text)` chunks → embeds → delete-then-reinsert
+    (choice: always-fresh over `ON CONFLICT`, so re-ingest reflects source changes); logging → `logs.log`
+    (filemode="w", rewritten each run); main loop wired: fetch→parse→save_document→lookup doc_id→save_chunks
+  - [~] `POST /search` (cosine similarity) — `search.py` `search_chunks(query, k)` drafted (embed query →
+    `Chunk.embeddings.cosine_distance(query_vec)` → order_by ascending → limit k); ← *next: write & test it, then wire endpoint*
+  - [ ] pgvector index (IVFFlat/HNSW) — add after search works (brute-force seq-scan fine for now)
+  - _Deferred optimizations (revisit after basics work):_
+    - Heading/structure-aware chunking — needs `parse_document` to preserve structure (currently
+      `get_text()` strips all HTML → flat text with no headings to split on)
+    - Tune chunk size + overlap once we can eyeball real search results
+    - Batch-embed chunks (perf) instead of one-at-a-time
+    - Vector index tuning (IVFFlat/HNSW params) once corpus is larger
 - [ ] **Phase 4 — RAG answer pipeline with Claude** (Days 9–12)
 - [ ] **Phase 5 — Agentic layer** (Days 13–15)
 - [ ] **Phase 6 — Frontend (React + Vite)** (Days 16–17)
 - [ ] **Phase 7 — Harden** (Days 18–19)
 - [ ] **Phase 8 — Deploy & document** (Day 20)
 
-**Environment status:** Python 3.12.3 ✅ · Git 2.45.1 ✅ · Docker ❌ (install before Phase 2) · Node ❌ (needed Phase 6)
+**Environment status:** Python 3.12.3 ✅ · Git 2.45.1 ✅ · Docker ✅ (Desktop running, pgvector container up) · Node ❌ (needed Phase 6)
 
 ---
 
