@@ -25,23 +25,41 @@
   - [x] pytest tests for ingestion (`test_injest.py`) — unit: `parse_document` (pure, exact-match) &
     `fetch_document` (mocked `httpx.get` w/ spy); integration: `save_document` against separate
     `docsgpt_test` DB via engine dependency-injection + fixture create_all/drop_all teardown
-- [~] **Phase 3 — Chunking, embeddings & vector search** (Days 6–8)  ← *we are here*
+- [x] **Phase 3 — Chunking, embeddings & vector search** (Days 6–8) — done
   - [x] Chunking — `chunk_text` fixed-size sliding window (char size+overlap), returns `(offset, text)` tuples; unit-tested
   - [x] Embeddings — `embeddings.py` owns `SentenceTransformer` (bge-small, 384-dim) loaded once at module
     level + `get_embedding(text)`; `HF_HUB_OFFLINE=1` set before import to use local cache
   - [x] Store chunks + vectors — `save_chunks(doc_id, text)` chunks → embeds → delete-then-reinsert
     (choice: always-fresh over `ON CONFLICT`, so re-ingest reflects source changes); logging → `logs.log`
     (filemode="w", rewritten each run); main loop wired: fetch→parse→save_document→lookup doc_id→save_chunks
-  - [~] `POST /search` (cosine similarity) — `search.py` `search_chunks(query, k)` drafted (embed query →
-    `Chunk.embeddings.cosine_distance(query_vec)` → order_by ascending → limit k); ← *next: write & test it, then wire endpoint*
-  - [ ] pgvector index (IVFFlat/HNSW) — add after search works (brute-force seq-scan fine for now)
+  - [x] `POST /search` (cosine similarity) — `search.py` `search_chunks(query, k)` (embed query →
+    `Chunk.embeddings.cosine_distance(query_vec)` → order_by ascending → limit k); wired into `main.py`
+  - [x] pgvector HNSW index on `chunks.embeddings` (`vector_cosine_ops`) — matches the `<=>` query operator
   - _Deferred optimizations (revisit after basics work):_
     - Heading/structure-aware chunking — needs `parse_document` to preserve structure (currently
-      `get_text()` strips all HTML → flat text with no headings to split on)
+      `get_text()` strips all HTML → flat text with no headings to split on); ALSO strips nav/TOC menus into
+      chunks → junk chunks waste retrieval slots (seen live in Phase 4 debugging)
     - Tune chunk size + overlap once we can eyeball real search results
     - Batch-embed chunks (perf) instead of one-at-a-time
     - Vector index tuning (IVFFlat/HNSW params) once corpus is larger
-- [ ] **Phase 4 — RAG answer pipeline with Claude** (Days 9–12)
+- [~] **Phase 4 — RAG answer pipeline with Claude** (Days 9–12)  ← *we are here*
+  - [x] Anthropic SDK setup — `pip install anthropic`; API key from `ANTHROPIC_API_KEY` via `.env`
+    (`python-dotenv` `load_dotenv()`; `.env` gitignored); auth verified with throwaway `hello_claude.py`
+  - [x] `rag.py` `answer_question(question, k)` — retrieve (`search_chunks`) → stitch excerpts → grounded
+    prompt (system: answer ONLY from excerpts, else "couldn't find in docs" fallback) → `claude-opus-4-8`
+    generate → return answer text. Wired into `main.py` `POST /ask` (Pydantic `AskRequest`)
+  - [x] Learned live: "not found" was correct behavior — query-params page wasn't ingested (corpus-coverage
+    gap, not a bug). Fix: expanded `sources.json` (query-params, body) + re-ingest. Lesson: RAG quality is
+    dominated by retrieval/corpus, not the LLM — debug by printing retrieved context first
+  - [x] Citations — `search_chunks` now JOINs `documents` (INNER via `Chunk.doc_id == Document.id`) and
+    selects `url`/`title`; switched call sites from positional unpacking to by-name `Row` access. `answer_question`
+    numbers excerpts (`enumerate(start=1)` → `[n] text` in prompt) + builds parallel `sources` list; system prompt
+    asks Claude to cite `[n]`; returns `{"answer", "sources"}`. Both callers updated (`/search`, `/ask`). Verified
+    live: `/ask` returns bracketed cites + n→url/title map. Decision: kept SQLAlchemy Rows w/ labeled cols (by-name
+    access) over a class — promote to Pydantic model in Phase 5 if fields keep growing
+  - [ ] Classify intent (haiku, structured outputs) before retrieval; prompt caching; cost logging
+  - _Deferred (after planned steps): overview open-knowledge formats (e.g. structured/open knowledge
+    representations) that could improve RAG quality — evaluate once the core pipeline + citations are done_
 - [ ] **Phase 5 — Agentic layer** (Days 13–15)
 - [ ] **Phase 6 — Frontend (React + Vite)** (Days 16–17)
 - [ ] **Phase 7 — Harden** (Days 18–19)

@@ -1,4 +1,6 @@
 [
   { "url": "https://fastapi.tiangolo.com/tutorial/first-steps/", "title": "First Steps" },
-  { "url": "https://fastapi.tiangolo.com/tutorial/path-params/", "title": "Path Parameters" }
+  { "url": "https://fastapi.tiangolo.com/tutorial/path-params/", "title": "Path Parameters" },
+  { "url": "https://fastapi.tiangolo.com/tutorial/query-params/", "title": "Query Parameters" },
+  { "url": "https://fastapi.tiangolo.com/tutorial/body/", "title": "Request Body" }
 ]

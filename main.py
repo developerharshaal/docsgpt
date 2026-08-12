@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from search import search_chunks
+from rag import answer_question
 
 app = FastAPI()
 
@@ -19,4 +20,19 @@ class SearchRequest(BaseModel):
 @app.post("/search")
 def search(request: SearchRequest):
     results = search_chunks(query=request.query, top_k=request.top_k)
-    return {"results": [{"text": text, "distance": float(distance)} for text, distance in results]}
+    return {"results": [
+        {
+            "text": row.text,
+            "distance": float(row.distance),
+            "url": row.url,
+            "title": row.title
+        } for row in results
+    ]}
+
+class AskRequest(BaseModel):
+    question: str
+
+@app.post("/ask")
+def ask(request: AskRequest):
+    result = answer_question(question=request.question)
+    return {"answer": result["answer"], "sources": result["sources"]}
