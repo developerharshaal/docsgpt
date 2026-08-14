@@ -42,7 +42,7 @@
     - Tune chunk size + overlap once we can eyeball real search results
     - Batch-embed chunks (perf) instead of one-at-a-time
     - Vector index tuning (IVFFlat/HNSW params) once corpus is larger
-- [~] **Phase 4 — RAG answer pipeline with Claude** (Days 9–12)  ← *we are here*
+- [x] **Phase 4 — RAG answer pipeline with Claude** (Days 9–12) — done
   - [x] Anthropic SDK setup — `pip install anthropic`; API key from `ANTHROPIC_API_KEY` via `.env`
     (`python-dotenv` `load_dotenv()`; `.env` gitignored); auth verified with throwaway `hello_claude.py`
   - [x] `rag.py` `answer_question(question, k)` — retrieve (`search_chunks`) → stitch excerpts → grounded
@@ -57,10 +57,26 @@
     asks Claude to cite `[n]`; returns `{"answer", "sources"}`. Both callers updated (`/search`, `/ask`). Verified
     live: `/ask` returns bracketed cites + n→url/title map. Decision: kept SQLAlchemy Rows w/ labeled cols (by-name
     access) over a class — promote to Pydantic model in Phase 5 if fields keep growing
-  - [ ] Classify intent (haiku, structured outputs) before retrieval; prompt caching; cost logging
+  - [x] Classify intent — `classify.py` `classify_intent()` (haiku, structured outputs via `messages.parse` +
+    `output_format=ClassifyRequest` Pydantic model; `MessageType` enum greeting/factual/broad). Wired into
+    `rag.py`: greeting short-circuits (0 retrieval), `CONFIG_BY_INTENT` routes factual→sonnet/k=5, broad→opus/k=10.
+    Verified live on server: source count is the fingerprint of which branch fired (0/5/10). Noted: broad topics
+    (e.g. "how does dependency injection work") retrieve but answer-model hedges → corpus gap (DI pages not in
+    `sources.json`), consistent with the "retrieval dominates RAG quality" lesson — not a classify bug
+  - [x] Cost logging — logging was never configured for the server (only in `injest.py` `__main__`), so
+    added `basicConfig` to `main.py` (filemode="a"). Shared `usage.py` `log_usage(logger, model, usage)` logs
+    `in/out/cache_read/cache_write` tokens at BOTH Claude calls (classify haiku + answer sonnet/opus). Also added
+    a meaningful one-line-per-decision trace: `POST /ask|/search` (main), `classify message_type=` +
+    `route intent/model/k` (rag), `search hits/best_distance` (search — high best_distance = corpus-gap tell).
+    Logged tokens not dollars on purpose (prices go stale in code; multiply offline). Verified live via `logs.log`
+  - [x] Prompt caching — wired `cache_control={"type":"ephemeral"}` on the `system` block (as content-block list)
+    in both `rag.py` and `classify.py`. Deliberate measured no-op today: system prompts are ~80/130 tokens, below
+    the cache minimum (~1024, ~2048 for Haiku), so it declines silently and `cache_read/write` stay 0 — confirmed
+    via the usage logs. Correct mechanics are in place; caching starts paying off on a large stable prefix (Phase 5
+    agent tool schemas). Lesson: caching fails silently below the minimum — check prefix token size first
   - _Deferred (after planned steps): overview open-knowledge formats (e.g. structured/open knowledge
     representations) that could improve RAG quality — evaluate once the core pipeline + citations are done_
-- [ ] **Phase 5 — Agentic layer** (Days 13–15)
+- [ ] **Phase 5 — Agentic layer** (Days 13–15)  ← *next*
 - [ ] **Phase 6 — Frontend (React + Vite)** (Days 16–17)
 - [ ] **Phase 7 — Harden** (Days 18–19)
 - [ ] **Phase 8 — Deploy & document** (Day 20)
