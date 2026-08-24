@@ -22,19 +22,14 @@ CONFIG_BY_INTENT = {
     MessageType.broad: ("claude-opus-4-8", 10)
 }
 
-def answer_question(question: str):
 
-    message_type = classify_intent(question)
+def _generate_answer(question: str, chunks, model: str):
+    """Grounded one-shot answer from already-retrieved chunks.
 
-    if message_type == MessageType.greeting:
-        logger.info("route intent=greeting (short-circuit, no retrieval)")
-        return {"answer": "Hello! How can I assist you with FastAPI documentation today?", "sources": []}
-
-    use_model, use_k = CONFIG_BY_INTENT[message_type]
-    logger.info("route intent=%s model=%s k=%d", message_type.value, use_model, use_k)
-
-    chunks = search_chunks(query=question, top_k=use_k)
-
+    Split out of answer_question so gate.py's confidence-gated path can reuse
+    the exact same generation step after deciding retrieval was good enough —
+    without duplicating the prompt/cache/usage-logging code.
+    """
     numbered = []
     sources = []
     for n, row in enumerate(chunks, start=1):
@@ -52,14 +47,29 @@ Question: {question}"""
     # cache_read/cache_write stay 0. It starts paying off once the stable prefix
     # gets large (many-shot examples, or the tool schemas in the Phase 5 agent).
     response = client.messages.create(
-        model=use_model,
+        model=model,
         max_tokens=1024,
         system=[
             {"type": "text", "text": SYSTEM_PROPMT, "cache_control": {"type": "ephemeral"}}
         ],
         messages=[{"role": "user", "content": user_messsage}],
     )
-    log_usage(logger, use_model, response.usage)
+    log_usage(logger, model, response.usage)
 
     answer = next(block.text for block in response.content if block.type == "text")
     return {"answer": answer, "sources": sources}
+
+
+def answer_question(question: str):
+
+    message_type = classify_intent(question)
+
+    if message_type == MessageType.greeting:
+        logger.info("route intent=greeting (short-circuit, no retrieval)")
+        return {"answer": "Hello! How can I assist you with FastAPI documentation today?", "sources": []}
+
+    use_model, use_k = CONFIG_BY_INTENT[message_type]
+    logger.info("route intent=%s model=%s k=%d", message_type.value, use_model, use_k)
+
+    chunks = search_chunks(query=question, top_k=use_k)
+    return _generate_answer(question, chunks, use_model)

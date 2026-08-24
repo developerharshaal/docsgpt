@@ -1,66 +1,99 @@
-2026-08-12 00:44:29,628 INFO __main__: Starting ingestion of 4 sources
-2026-08-12 00:44:29,644 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/first-steps/
-2026-08-12 00:44:29,995 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/first-steps/ "HTTP/1.1 200 OK"
-2026-08-12 00:44:30,008 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/first-steps/ bytes=143606
-2026-08-12 00:44:30,090 INFO __main__: Parsed document: 17466 chars of clean text
-2026-08-12 00:44:30,772 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/first-steps/ title=First Steps size=17466
-2026-08-12 00:44:30,783 INFO __main__: Chunked text into 39 chunks (size=500 overlap=50)
-2026-08-12 00:44:30,818 INFO __main__: Deleted 39 existing chunks for doc_id=1
-2026-08-12 00:44:35,276 INFO __main__: Saved 39 chunks for doc_id=1
-2026-08-12 00:44:35,276 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/path-params/
-2026-08-12 00:44:35,774 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/path-params/ "HTTP/1.1 200 OK"
-2026-08-12 00:44:35,774 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/path-params/ bytes=147306
-2026-08-12 00:44:35,854 INFO __main__: Parsed document: 15430 chars of clean text
-2026-08-12 00:44:35,902 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/path-params/ title=Path Parameters size=15430
-2026-08-12 00:44:35,917 INFO __main__: Chunked text into 35 chunks (size=500 overlap=50)
-2026-08-12 00:44:35,917 INFO __main__: Deleted 35 existing chunks for doc_id=4
-2026-08-12 00:44:38,203 INFO __main__: Saved 35 chunks for doc_id=4
-2026-08-12 00:44:38,204 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/query-params/
-2026-08-12 00:44:38,726 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/query-params/ "HTTP/1.1 200 OK"
-2026-08-12 00:44:38,737 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/query-params/ bytes=120577
-2026-08-12 00:44:38,799 INFO __main__: Parsed document: 9898 chars of clean text
-2026-08-12 00:44:38,853 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/query-params/ title=Query Parameters size=9898
-2026-08-12 00:44:38,860 INFO __main__: Chunked text into 22 chunks (size=500 overlap=50)
-2026-08-12 00:44:38,860 INFO __main__: Deleted 0 existing chunks for doc_id=17
-2026-08-12 00:44:40,757 INFO __main__: Saved 22 chunks for doc_id=17
-2026-08-12 00:44:40,757 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/body/
-2026-08-12 00:44:41,252 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/body/ "HTTP/1.1 200 OK"
-2026-08-12 00:44:41,257 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/body/ bytes=126639
-2026-08-12 00:44:41,341 INFO __main__: Parsed document: 11926 chars of clean text
-2026-08-12 00:44:41,391 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/body/ title=Request Body size=11926
-2026-08-12 00:44:41,394 INFO __main__: Chunked text into 27 chunks (size=500 overlap=50)
-2026-08-12 00:44:41,397 INFO __main__: Deleted 0 existing chunks for doc_id=18
-2026-08-12 00:44:43,399 INFO __main__: Saved 27 chunks for doc_id=18
-2026-08-12 00:44:43,399 INFO __main__: Ingestion complete
-2026-08-14 10:38:34,488 INFO main: POST /ask question='how does dependency injection work in FastAPI?'
-2026-08-14 10:38:36,131 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
-2026-08-14 10:38:36,381 INFO classify: classify message_type=broad
-2026-08-14 10:38:36,381 INFO classify: usage model=claude-haiku-4-5 in=359 out=11 cache_read=0 cache_write=0
-2026-08-14 10:38:36,381 INFO rag: route intent=broad model=claude-opus-4-8 k=10
-2026-08-14 10:38:40,290 INFO search: search hits=10 top_k=10 best_distance=0.2503 query='how does dependency injection work in FastAPI?'
-2026-08-14 10:38:42,901 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
-2026-08-14 10:38:42,901 INFO rag: usage model=claude-opus-4-8 in=1973 out=75 cache_read=0 cache_write=0
-2026-08-14 10:40:44,956 INFO main: POST /ask question='what is FastAPI?'
-2026-08-14 10:40:46,283 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
-2026-08-14 10:40:46,364 INFO classify: classify message_type=broad
-2026-08-14 10:40:46,364 INFO classify: usage model=claude-haiku-4-5 in=355 out=11 cache_read=0 cache_write=0
-2026-08-14 10:40:46,364 INFO rag: route intent=broad model=claude-opus-4-8 k=10
-2026-08-14 10:40:51,240 INFO search: search hits=10 top_k=10 best_distance=0.2401 query='what is FastAPI?'
-2026-08-14 10:40:52,949 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
-2026-08-14 10:40:52,955 INFO rag: usage model=claude-opus-4-8 in=1994 out=65 cache_read=0 cache_write=0
-2026-08-14 10:46:59,179 INFO main: POST /ask question='what is FastAPI?'
-2026-08-14 10:47:01,215 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
-2026-08-14 10:47:01,568 INFO classify: classify message_type=broad
-2026-08-14 10:47:01,568 INFO classify: usage model=claude-haiku-4-5 in=355 out=11 cache_read=0 cache_write=0
-2026-08-14 10:47:01,568 INFO rag: route intent=broad model=claude-opus-4-8 k=10
-2026-08-14 10:47:03,972 INFO search: search hits=10 top_k=10 best_distance=0.2401 query='what is FastAPI?'
-2026-08-14 10:47:05,754 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
-2026-08-14 10:47:05,755 INFO rag: usage model=claude-opus-4-8 in=1994 out=65 cache_read=0 cache_write=0
-2026-08-14 10:47:35,756 INFO main: POST /ask question='what is FastAPI?'
-2026-08-14 10:47:36,716 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
-2026-08-14 10:47:36,716 INFO classify: classify message_type=broad
-2026-08-14 10:47:36,716 INFO classify: usage model=claude-haiku-4-5 in=355 out=11 cache_read=0 cache_write=0
-2026-08-14 10:47:36,716 INFO rag: route intent=broad model=claude-opus-4-8 k=10
-2026-08-14 10:47:36,791 INFO search: search hits=10 top_k=10 best_distance=0.2401 query='what is FastAPI?'
-2026-08-14 10:47:38,404 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
-2026-08-14 10:47:38,405 INFO rag: usage model=claude-opus-4-8 in=1994 out=65 cache_read=0 cache_write=0
+2026-08-23 16:37:27,521 INFO __main__: Starting ingestion of 5 sources
+2026-08-23 16:37:27,529 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/first-steps/
+2026-08-23 16:37:27,974 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/first-steps/ "HTTP/1.1 200 OK"
+2026-08-23 16:37:27,974 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/first-steps/ bytes=143379
+2026-08-23 16:37:28,066 INFO __main__: Parsed document: 17466 chars of clean text
+2026-08-23 16:37:28,434 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/first-steps/ title=First Steps size=17466
+2026-08-23 16:37:28,441 INFO __main__: Chunked text into 39 chunks (size=500 overlap=50)
+2026-08-23 16:37:28,450 INFO __main__: Deleted 39 existing chunks for doc_id=1
+2026-08-23 16:37:33,962 INFO __main__: Saved 39 chunks for doc_id=1
+2026-08-23 16:37:33,962 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/path-params/
+2026-08-23 16:37:34,316 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/path-params/ "HTTP/1.1 200 OK"
+2026-08-23 16:37:34,323 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/path-params/ bytes=147079
+2026-08-23 16:37:34,406 INFO __main__: Parsed document: 15430 chars of clean text
+2026-08-23 16:37:34,406 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/path-params/ title=Path Parameters size=15430
+2026-08-23 16:37:34,413 INFO __main__: Chunked text into 35 chunks (size=500 overlap=50)
+2026-08-23 16:37:34,420 INFO __main__: Deleted 35 existing chunks for doc_id=4
+2026-08-23 16:37:36,727 INFO __main__: Saved 35 chunks for doc_id=4
+2026-08-23 16:37:36,727 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/query-params/
+2026-08-23 16:37:37,073 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/query-params/ "HTTP/1.1 200 OK"
+2026-08-23 16:37:37,085 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/query-params/ bytes=120350
+2026-08-23 16:37:37,145 INFO __main__: Parsed document: 9898 chars of clean text
+2026-08-23 16:37:37,193 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/query-params/ title=Query Parameters size=9898
+2026-08-23 16:37:37,193 INFO __main__: Chunked text into 22 chunks (size=500 overlap=50)
+2026-08-23 16:37:37,208 INFO __main__: Deleted 22 existing chunks for doc_id=17
+2026-08-23 16:37:38,690 INFO __main__: Saved 22 chunks for doc_id=17
+2026-08-23 16:37:38,690 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/body/
+2026-08-23 16:37:39,045 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/body/ "HTTP/1.1 200 OK"
+2026-08-23 16:37:39,061 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/body/ bytes=126412
+2026-08-23 16:37:39,109 INFO __main__: Parsed document: 11926 chars of clean text
+2026-08-23 16:37:39,168 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/body/ title=Request Body size=11926
+2026-08-23 16:37:39,168 INFO __main__: Chunked text into 27 chunks (size=500 overlap=50)
+2026-08-23 16:37:39,177 INFO __main__: Deleted 27 existing chunks for doc_id=18
+2026-08-23 16:37:41,501 INFO __main__: Saved 27 chunks for doc_id=18
+2026-08-23 16:37:41,501 INFO __main__: Fetching document url=https://fastapi.tiangolo.com/tutorial/middleware/
+2026-08-23 16:37:41,892 INFO httpx: HTTP Request: GET https://fastapi.tiangolo.com/tutorial/middleware/ "HTTP/1.1 200 OK"
+2026-08-23 16:37:41,892 INFO __main__: Fetched document url=https://fastapi.tiangolo.com/tutorial/middleware/ bytes=107421
+2026-08-23 16:37:41,941 INFO __main__: Parsed document: 8426 chars of clean text
+2026-08-23 16:37:42,005 INFO __main__: Saved document url=https://fastapi.tiangolo.com/tutorial/middleware/ title=Middleware size=8426
+2026-08-23 16:37:42,008 INFO __main__: Chunked text into 19 chunks (size=500 overlap=50)
+2026-08-23 16:37:42,008 INFO __main__: Deleted 0 existing chunks for doc_id=23
+2026-08-23 16:37:43,216 INFO __main__: Saved 19 chunks for doc_id=23
+2026-08-23 16:37:43,216 INFO __main__: Ingestion complete
+2026-08-23 17:59:27,855 INFO main: POST /ask question='how do I add middleware in FastAPI?'
+2026-08-23 17:59:32,545 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-23 17:59:32,800 INFO classify: classify message_type=factual
+2026-08-23 17:59:32,800 INFO classify: usage model=claude-haiku-4-5 in=359 out=12 cache_read=0 cache_write=0
+2026-08-23 17:59:32,800 INFO rag: route intent=factual model=claude-sonnet-5 k=5
+2026-08-23 17:59:37,237 INFO search: search hits=5 top_k=5 best_distance=0.1865 query='how do I add middleware in FastAPI?'
+2026-08-23 17:59:39,544 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-23 17:59:39,544 INFO rag: usage model=claude-sonnet-5 in=1133 out=160 cache_read=0 cache_write=0
+2026-08-23 18:00:46,175 INFO main: POST /ask-agent question='how do I add middleware in FastAPI?'
+2026-08-23 18:00:48,127 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 18:00:48,652 INFO agent: usage model=claude-opus-4-8 in=1056 out=80 cache_read=0 cache_write=0
+2026-08-23 18:00:48,870 INFO search: search hits=5 top_k=5 best_distance=0.1759 query='add middleware in FastAPI'
+2026-08-23 18:00:51,021 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 18:00:51,021 INFO agent: usage model=claude-opus-4-8 in=2213 out=97 cache_read=0 cache_write=0
+2026-08-23 18:01:00,898 INFO httpx: HTTP Request: POST https://api.anthropic.com/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 18:01:00,898 INFO agent: usage model=claude-opus-4-8 in=5300 out=763 cache_read=0 cache_write=0
+2026-08-23 20:45:42,026 INFO main: POST /ask-smart question='hi there'
+2026-08-23 20:45:43,574 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages "HTTP/1.1 200 OK"
+2026-08-23 20:45:43,980 INFO classify: classify message_type=greeting
+2026-08-23 20:45:43,981 INFO classify: usage model=claude-haiku-4-5 in=352 out=11 cache_read=0 cache_write=0
+2026-08-23 20:45:43,981 INFO gate: gate route=greeting (short-circuit, no retrieval)
+2026-08-23 20:45:44,031 INFO main: POST /ask-smart question='how do I add middleware in FastAPI?'
+2026-08-23 20:45:44,879 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages "HTTP/1.1 200 OK"
+2026-08-23 20:45:44,880 INFO classify: classify message_type=factual
+2026-08-23 20:45:44,880 INFO classify: usage model=claude-haiku-4-5 in=359 out=12 cache_read=0 cache_write=0
+2026-08-23 20:45:48,540 INFO search: search hits=5 top_k=5 best_distance=0.1865 query='how do I add middleware in FastAPI?'
+2026-08-23 20:45:48,542 INFO gate: gate route=rag intent=factual model=claude-sonnet-5 k=5 best_distance=0.1865
+2026-08-23 20:45:50,951 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages "HTTP/1.1 200 OK"
+2026-08-23 20:45:50,953 INFO rag: usage model=claude-sonnet-5 in=1133 out=159 cache_read=0 cache_write=0
+2026-08-23 20:45:51,018 INFO main: POST /ask-smart question='how do I use WebSockets in FastAPI?'
+2026-08-23 20:45:52,495 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages "HTTP/1.1 200 OK"
+2026-08-23 20:45:52,497 INFO classify: classify message_type=broad
+2026-08-23 20:45:52,497 INFO classify: usage model=claude-haiku-4-5 in=361 out=11 cache_read=0 cache_write=0
+2026-08-23 20:45:52,782 INFO search: search hits=10 top_k=10 best_distance=0.2361 query='how do I use WebSockets in FastAPI?'
+2026-08-23 20:45:52,782 INFO gate: gate route=agent intent=broad best_distance=0.2361 threshold=0.2200
+2026-08-23 20:45:54,590 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 20:45:56,505 INFO agent: usage model=claude-opus-4-8 in=1058 out=81 cache_read=0 cache_write=0
+2026-08-23 20:45:56,665 INFO search: search hits=5 top_k=5 best_distance=0.2402 query='WebSockets in FastAPI'
+2026-08-23 20:46:02,293 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 20:46:02,397 INFO agent: usage model=claude-opus-4-8 in=2 out=101 cache_read=0 cache_write=2322
+2026-08-23 20:46:04,224 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 20:46:04,225 INFO agent: usage model=claude-opus-4-8 in=2 out=66 cache_read=2322 cache_write=136
+2026-08-23 20:46:04,445 INFO search: search hits=5 top_k=5 best_distance=0.3434 query='create websocket endpoint await websocket receive_text send_text'
+2026-08-23 20:46:07,612 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 20:46:07,617 INFO agent: usage model=claude-opus-4-8 in=2 out=192 cache_read=2458 cache_write=1276
+2026-08-23 20:46:10,038 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 20:46:10,041 INFO agent: usage model=claude-opus-4-8 in=2 out=125 cache_read=3734 cache_write=316
+2026-08-23 20:46:10,152 INFO search: search hits=5 top_k=5 best_distance=0.2938 query='WebSocket class accept close receive send methods reference'
+2026-08-23 20:46:10,235 INFO search: search hits=5 top_k=5 best_distance=0.3098 query='Testing WebSockets TestClient websocket_connect'
+2026-08-23 20:46:13,921 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 20:46:13,923 INFO agent: usage model=claude-opus-4-8 in=2 out=210 cache_read=4050 cache_write=2612
+2026-08-23 20:46:14,139 INFO search: search hits=5 top_k=5 best_distance=0.3210 query='install websockets pip @app.websocket path WebSocketDisconnect'
+2026-08-23 20:46:20,199 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 20:46:20,202 INFO agent: usage model=claude-opus-4-8 in=2 out=319 cache_read=6662 cache_write=1430
+2026-08-23 20:46:20,203 WARNING agent: documentation gap flagged: The actual body content of the WebSockets tutorial/advanced page and the Testing WebSockets page is not retrievable — search only returns navigation sidebars, and the page URLs (e.g., /advanced/websockets/) could not be fetched.
+2026-08-23 20:46:24,435 INFO httpx: HTTP Request: POST http://127.0.0.1:8787/v1/messages?beta=true "HTTP/1.1 200 OK"
+2026-08-23 20:46:24,436 INFO agent: usage model=claude-opus-4-8 in=2 out=233 cache_read=8092 cache_write=412

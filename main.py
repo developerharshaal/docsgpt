@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from search import search_chunks
 from rag import answer_question
+from agent import answer_with_agent
+from gate import answer_gated
 
 # Configure logging for the whole app when the server imports this module.
 # (injest.py configures its own logging for the ingestion CLI run.) filemode="a"
@@ -52,3 +54,15 @@ def ask(request: AskRequest):
     logger.info("POST /ask question=%r", request.question)
     result = answer_question(question=request.question)
     return {"answer": result["answer"], "sources": result["sources"]}
+
+@app.post("/ask-agent")
+def ask_agent(request: AskRequest):
+    logger.info("POST /ask-agent question=%r", request.question)
+    result = answer_with_agent(question=request.question)
+    return {"answer": result["answer"], "sources": result["sources"]}
+
+@app.post("/ask-smart")
+def ask_smart(request: AskRequest):
+    logger.info("POST /ask-smart question=%r", request.question)
+    result = answer_gated(question=request.question)
+    return {"answer": result["answer"], "sources": result["sources"], "route": result["route"]}

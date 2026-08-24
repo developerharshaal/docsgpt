@@ -76,7 +76,60 @@
     agent tool schemas). Lesson: caching fails silently below the minimum — check prefix token size first
   - _Deferred (after planned steps): overview open-knowledge formats (e.g. structured/open knowledge
     representations) that could improve RAG quality — evaluate once the core pipeline + citations are done_
-- [ ] **Phase 5 — Agentic layer** (Days 13–15)  ← *next*
+- [x] **Phase 5 — Agentic layer** (Days 13–15) — done
+  - [x] Tool runner — `agent.py` uses `client.beta.messages.tool_runner` (SDK drives the
+    request→execute→loop cycle) with three `@beta_tool` functions: `search_docs(query)` (calls
+    `search_chunks`, returns numbered+sourced excerpts), `fetch_doc_page(url)` (selects `Document.text`
+    for a full page when excerpts are too thin), `flag_gap(topic)` (logs a warning when the docs genuinely
+    don't cover it). `answer_with_agent(question)` iterates the runner, logs per-turn usage, returns text.
+    System prompt: answer ONLY from retrieved docs, cite `[n]`, else flag the gap — never invent
+  - [x] Sources in agent output — problem: retrieval happens *inside* `search_docs`, so `answer_with_agent`
+    never sees the rows (unlike `rag.py`). Fix: a `contextvars.ContextVar` (`_request_sources`) per request
+    (not a module global — FastAPI runs sync endpoints in a threadpool). `search_docs` appends each
+    `{n, url, title}`, numbered **globally** across all searches in the request (so multiple search calls
+    don't collide on `[1]`). `answer_with_agent` now returns `{"answer", "sources"}` — same shape as
+    `rag.answer_question`, so endpoints are interchangeable
+  - [x] Wired `POST /ask-agent` in `main.py` (mirrors `/ask` but routes to the agent). Kept `/ask` on
+    `rag.py` on purpose → live A/B of one-shot RAG vs. agent on the same question. (Bug caught at run time,
+    not import time: `result["amswer"]` typo → `KeyError`/500; lesson to test the request, not trust the import)
+  - [x] Verified live — corpus before/after: agent asked "how to add middleware", couldn't retrieve it,
+    correctly `flag_gap`'d instead of hallucinating (middleware page wasn't in `sources.json`). Added the URL +
+    re-ingested → *same code, same query* flipped to a full-page-grounded cited answer. Proof the agent's
+    honesty is real and the failure was upstream (corpus coverage), not the agent. Also re-confirmed the
+    nav-chrome noise (get_text pulls the site nav sidebar into chunks) — deferred fix in Phase 3 notes
+  - [x] Prompt caching finally engages here — the tool schemas + frozen system prompt form a large stable
+    prefix (cache_write went 0→2196 once excerpts bulked the prefix past the ~4096 Opus minimum), unlike the
+    tiny prompts in `rag.py`/`classify.py`
+  - [x] Live cost A/B (same middleware question): `/ask` = 2 cheap calls (haiku classify + sonnet answer),
+    1 search, ~1.5K in / 172 out, ~11.7s. `/ask-agent` = 3 Opus calls (search → fetch full page → answer),
+    ~8.6K in / 940 out, ~14.7s. Agent produced a richer full-page-grounded answer but at ~5× tokens on the
+    priciest tier — overkill for a simple "how do I" Q. This is the empirical motivation for confidence gating
+  - [x] **Confidence gating** — resolved: `best_distance` from the existing retrieval pass, not intent class
+    or a separate pre-check (it's already computed free by `search.py`, and it measures whether retrieval
+    *succeeded*, which is exactly what the agent's re-search/fetch-page/flag-gap abilities address — intent
+    class only predicts question *shape*). New `gate.py::answer_gated`, wired at `POST /ask-smart`; kept
+    `/ask` and `/ask-agent` untouched so the A/B comparison above still stands on its own
+  - [x] Sampled best_distance on 5 in-corpus + 5 out-of-corpus FastAPI questions + 1 fully off-topic one:
+    covered 0.1451–0.2166, missing 0.1875–0.4755. **Finding: not a clean separator** — a genuinely-missing
+    OAuth2 question (0.1875) scored *better* than a genuinely-covered "first steps" question (0.2166). Only
+    the fully off-domain query (pizza toppings, 0.4755) separated cleanly. `CONFIDENCE_THRESHOLD = 0.22` is
+    set above every covered sample here, biasing toward "never escalate a real hit" since escalation costs
+    ~5× tokens (see the A/B above) — accepting that a handful of borderline real gaps (like OAuth2) will
+    fall through to `/ask`'s "couldn't find that in the documentation" fallback instead of the agent's
+    `flag_gap`. Revisit with a real eval set, not 11 hand-picked queries, before trusting the number
+  - [x] Refactored `rag.py`: pulled the model-call/prompt/cache/usage-logging block out of `answer_question`
+    into `_generate_answer(question, chunks, model)` so `gate.py` reuses the exact same generation step
+    after deciding retrieval was good enough, instead of duplicating it
+  - [x] Escalation is discard-and-re-search, not seed-the-agent — `gate.py` decides on one retrieval pass,
+    then on escalation `agent.answer_with_agent` retrieves again from scratch inside its own tool loop.
+    Deliberate simplification: the discarded pass is a local embed + pgvector query, $0 in API tokens, so
+    it's cheap next to threading pre-fetched chunks through the tool-runner's contract
+  - [x] Verified live end-to-end via a real server (all three routes): "hi there" → `route=greeting`
+    short-circuit; "how do I add middleware" → `route=rag`, sonnet answered from excerpts; "how do I use
+    WebSockets" → `route=agent` (`best_distance=0.2361` > threshold), escalated, and hit a genuine gap —
+    WebSockets was never in `sources.json` in the first place, so the agent's honest "couldn't retrieve
+    it, don't want to invent it" answer was the *correct* outcome, not a fluke. Log line confirms the
+    decision: `gate: gate route=agent intent=broad best_distance=0.2361 threshold=0.2200`
 - [ ] **Phase 6 — Frontend (React + Vite)** (Days 16–17)
 - [ ] **Phase 7 — Harden** (Days 18–19)
 - [ ] **Phase 8 — Deploy & document** (Day 20)
