@@ -130,11 +130,22 @@
     WebSockets was never in `sources.json` in the first place, so the agent's honest "couldn't retrieve
     it, don't want to invent it" answer was the *correct* outcome, not a fluke. Log line confirms the
     decision: `gate: gate route=agent intent=broad best_distance=0.2361 threshold=0.2200`
-- [ ] **Phase 6 — Frontend (React + Vite)** (Days 16–17)
+- [x] **Phase 6 — Frontend (React + Vite)** (Days 16–17) — done
+  - [x] Q&A UI (`App.tsx`) wired to `/ask-smart` — controlled `question` input, typed `AnswerResponse`/`Source`
+    mirroring the backend response contract, conditional render of answer card + route badge + `.map()`'d
+    `.source-tag` links
+  - [x] Design system (`index.css`/`App.css`) — warm-monochrome editorial tokens (canvas/border/text, Newsreader
+    serif headings, pale blue/yellow/red accent pairs) built ahead of the component, then wired in via `className`
+  - [x] CORS — `allow_origins=["http://localhost:5173"]`; verified live via browser console (blocked from a
+    foreign origin, succeeded from the app's own origin)
+  - [x] Loading + error states — `try/catch/finally` (cleanup that must always run belongs in `finally`; state
+    `catch` just set must never be touched there, or it's silently overwritten before React paints); loading
+    disables re-submission; failed fetch renders a pale-red error banner; error clears on next submit. Verified
+    live: stopped backend → "Failed to fetch" rendered → restarted → retry cleared the error, rendered fresh answer
 - [ ] **Phase 7 — Harden** (Days 18–19)
 - [ ] **Phase 8 — Deploy & document** (Day 20)
 
-**Environment status:** Python 3.12.3 ✅ · Git 2.45.1 ✅ · Docker ✅ (Desktop running, pgvector container up) · Node ❌ (needed Phase 6)
+**Environment status:** Python 3.12.3 ✅ · Git 2.45.1 ✅ · Docker ✅ (Desktop running, pgvector container up) · Node ✅ (Vite + React frontend live)
 
 ---
 

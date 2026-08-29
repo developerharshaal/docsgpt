@@ -1,13 +1,15 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import delete, select
-from db import engine
-from models import Document, Chunk
-import httpx
-from bs4 import BeautifulSoup
-from sqlalchemy.dialects.postgresql import insert
 import json
 import logging
+
+import httpx
+from bs4 import BeautifulSoup
+from sqlalchemy import delete, select
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import Session
+
+from db import engine
 from embeddings import get_embedding
+from models import Chunk, Document
 
 logger = logging.getLogger(__name__)
 

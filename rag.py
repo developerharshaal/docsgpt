@@ -1,11 +1,13 @@
 from dotenv import load_dotenv
+
 load_dotenv()
 
 import logging
 
 import anthropic
+
+from classify import MessageType, classify_intent
 from search import search_chunks
-from classify import classify_intent, MessageType
 from usage import log_usage
 
 client = anthropic.Anthropic()

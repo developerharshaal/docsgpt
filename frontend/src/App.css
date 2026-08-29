@@ -1,0 +1,133 @@
+.app-shell {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 80px 24px 120px;
+}
+
+.app-header {
+  margin-bottom: 40px;
+}
+
+.app-header p {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.ask-form {
+  display: flex;
+  gap: 8px;
+}
+
+.ask-input {
+  flex: 1 1 auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-h);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.ask-input:focus {
+  border-color: #c9c9c9;
+}
+
+.ask-button {
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 15px;
+  color: #ffffff;
+  background: #111111;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.ask-button:hover:not(:disabled) {
+  background: #333333;
+}
+
+.ask-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.ask-button:disabled {
+  background: var(--border);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.error-text {
+  margin-top: 32px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--accent-red-bg);
+  padding: 16px 20px;
+}
+
+.error-message {
+  color: var(--accent-red-text);
+  font-size: 14px;
+}
+
+.answer-card {
+  margin-top: 32px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 28px 32px;
+}
+
+.answer-route {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 3px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--accent-yellow-bg);
+  color: var(--accent-yellow-text);
+  margin-bottom: 16px;
+}
+
+.answer-text {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.sources {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.source-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.source-tag:hover {
+  opacity: 0.75;
+}

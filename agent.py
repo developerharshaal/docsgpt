@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+
 load_dotenv()  # Load environment variables from .env file
 
 import contextvars
@@ -6,8 +7,8 @@ import logging
 
 import anthropic
 from anthropic import beta_tool
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from db import engine
 from models import Document

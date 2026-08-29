@@ -1,10 +1,11 @@
 import logging
 
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import Session
+
 from db import engine
-from models import Chunk, Document
 from embeddings import get_embedding
+from models import Chunk, Document
 
 logger = logging.getLogger(__name__)
 

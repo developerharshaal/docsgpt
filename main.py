@@ -1,11 +1,13 @@
 import logging
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from search import search_chunks
-from rag import answer_question
+
 from agent import answer_with_agent
 from gate import answer_gated
+from rag import answer_question
+from search import search_chunks
 
 # Configure logging for the whole app when the server imports this module.
 # (injest.py configures its own logging for the ingestion CLI run.) filemode="a"
@@ -20,6 +22,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.get("/health")
 def health_check():

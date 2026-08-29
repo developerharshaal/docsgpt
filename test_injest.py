@@ -1,10 +1,11 @@
-from injest import parse_document, fetch_document, save_document, chunk_text
-from unittest.mock import patch, MagicMock
-from models import Base, Document
+from unittest.mock import MagicMock, patch
+
+import pytest
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
-import pytest
 
+from injest import chunk_text, fetch_document, parse_document, save_document
+from models import Base, Document
 
 TEST_DB_URL = "postgresql+psycopg://docsgpt:docsgpt@localhost:5432/docsgpt_test"
 test_engine = create_engine(TEST_DB_URL)

@@ -1,9 +1,9 @@
 import logging
 
-from search import search_chunks
-from classify import classify_intent, MessageType
-from rag import CONFIG_BY_INTENT, _generate_answer
 from agent import answer_with_agent
+from classify import MessageType, classify_intent
+from rag import CONFIG_BY_INTENT, _generate_answer
+from search import search_chunks
 
 logger = logging.getLogger(__name__)
 
