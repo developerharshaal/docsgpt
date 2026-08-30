@@ -29,7 +29,10 @@ function App() {
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': import.meta.env.VITE_API_KEY,
+        },
         body: JSON.stringify({ question }),
       })
       const data = await response.json()

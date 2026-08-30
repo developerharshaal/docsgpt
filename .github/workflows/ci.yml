@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HF_HUB_OFFLINE: "0"
+      ANTHROPIC_API_KEY: "sk-ant-dummy-for-ci"
+      API_KEY: "dummy-test-key-for-ci"
     services:
       postgres:
         image: pgvector/pgvector:pg16                  
