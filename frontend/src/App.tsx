@@ -23,6 +23,8 @@ function App() {
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault()
+    const currentQuestion = question
+    setQuestion('')
     setLoading(true)
     setError(null)
 
@@ -33,7 +35,7 @@ function App() {
           'Content-Type': 'application/json',
           'X-API-Key': import.meta.env.VITE_API_KEY,
         },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question: currentQuestion }),
       })
       const data = await response.json()
       setAnswer(data)

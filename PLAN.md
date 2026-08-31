@@ -142,7 +142,27 @@
     `catch` just set must never be touched there, or it's silently overwritten before React paints); loading
     disables re-submission; failed fetch renders a pale-red error banner; error clears on next submit. Verified
     live: stopped backend → "Failed to fetch" rendered → restarted → retry cleared the error, rendered fresh answer
-- [ ] **Phase 7 — Harden** (Days 18–19)
+- [x] **Phase 7 — Harden** (Days 18–19) — done
+  - [x] API key auth — `auth.py` (`fastapi.security.APIKeyHeader`, header `X-API-Key`) gates `/ask`,
+    `/ask-agent`, `/ask-smart` via `dependencies=[Depends(verify_api_key)]`. Frontend sends the key via
+    `VITE_API_KEY` in `frontend/.env.local` (gitignored). Verified live end-to-end via agent-browser
+  - [x] Rate limiting — `rate_limit.py`, sliding 60s window per API key, `check_rate_limit` dependency on
+    all three ask routes
+  - [x] Structured logging — `logging_config.py` (`configure_logging`, `LOG_LEVEL`-controlled) + a
+    request-ID middleware in `main.py` correlating every log line to one request
+  - [x] Centralized error handling — `main.py` exception handlers: `anthropic.APIError`→502,
+    `sqlalchemy.exc.SQLAlchemyError`→503, catch-all `Exception`→500; `logger.exception(...)` server-side,
+    generic `{"detail": "..."}` to the client
+  - [x] Tests — `tests/test_auth.py` (missing/wrong key), `tests/test_rate_limiter.py` (unit-tests
+    `check_rate_limit` directly to avoid real Claude/DB calls), `tests/test_error_handlers.py` (mocks
+    `main.answer_question`/`main.search_chunks` via `unittest.mock.patch` to trigger the handlers). Added
+    root `conftest.py` (empty) so `tests/*.py` can import root-level modules
+  - [x] CI green — fixed real blockers found by running lint/tests under CI-like conditions: unsorted
+    imports + a naive `datetime.now()` (ruff `I001`/`DTZ005`), and `rag.py`/`agent.py`/`classify.py`
+    constructing `anthropic.Anthropic()` at import time, which crashes if `ANTHROPIC_API_KEY` is unset —
+    added dummy `ANTHROPIC_API_KEY`/`API_KEY` values to `ci.yml`'s `env:` (safe since tests mock all real
+    Claude/DB calls). All 10 tests + lint verified green locally under CI-equivalent env vars; actual
+    GitHub Actions run still pending push
 - [ ] **Phase 8 — Deploy & document** (Day 20)
 
 **Environment status:** Python 3.12.3 ✅ · Git 2.45.1 ✅ · Docker ✅ (Desktop running, pgvector container up) · Node ✅ (Vite + React frontend live)
@@ -225,3 +245,20 @@ Pace is yours; ask "why" freely; say "slow down / I don't get X" anytime.
 - CI: branch push → GitHub Actions ruff + pytest green.
 - Deployed: public URL, ask via UI, see answer + sources.
 - You: at each checkpoint, can explain in your own words what we built and why.
+
+## Enhancements Backlog (pick up after Phase 8)
+
+Not core-path work — things worth doing once the 8-phase build is done and deployed. Not phase-numbered on purpose so it doesn't compete with the main roadmap above.
+
+**Proposed by Claude:**
+- [ ] **Constant-time API key comparison** (`auth.py`) — `verify_api_key` compares `key != API_KEY` directly, which leaks timing information about how many leading characters match. Use `secrets.compare_digest(key, API_KEY)` instead.
+- [ ] **Rotate client-facing `API_KEY`** — currently derived from the real `ANTHROPIC_API_KEY` with a suffix appended, rather than an independent secret. Since this key is sent from the browser on every request (visible in Network tab), it should be a fully independent random value (`secrets.token_urlsafe(32)`).
+- [ ] **Rate limiter won't scale past one process** (`rate_limit.py`) — `RATE_LIMITTER` is an in-memory module-level dict. If the app ever runs multiple uvicorn workers or replicas, each process has its own dict and the limit becomes meaningless. Move to Redis (or similar shared store) if scaling beyond a single process.
+- [ ] **Log rotation** (`logging_config.py`) — uses a plain `FileHandler("logs.log")` that grows unbounded. Switch to `RotatingFileHandler` or `TimedRotatingFileHandler`.
+- [ ] **Input validation on request models** — `AskRequest.question` has no max length, `SearchRequest.top_k` has no upper bound. A very long question or large `top_k` currently passes straight through to Claude/pgvector. Add Pydantic field constraints (`max_length`, `le=...`).
+- [ ] **Test coverage gaps** — current tests cover auth, rate limiting, and error-handler edges, but not the actual RAG/agent logic in `rag.py`, `agent.py`, `gate.py`, `classify.py`. Frontend has zero tests.
+- [ ] **`/health` doesn't check dependencies** — returns a static `{"status": "ok"}` regardless of DB state. A real health check should verify the Postgres connection.
+- [ ] **CI speed** — no caching for pip installs or the `sentence-transformers` model download, so every CI run re-downloads them. Add `actions/cache`.
+
+**Proposed by user:**
+- _(add items here)_
